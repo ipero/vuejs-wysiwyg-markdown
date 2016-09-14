@@ -49,7 +49,8 @@ Vue.component('wysiwyg-toolbar', {
       var text = this.sharedState.message;
       //check if link exist
       if(link!=false){
-        rightMark += rightMark + "(" + link + ") "
+        //add link to right mark symbol
+        rightMark += "(" + link + ") "
       }
       //check if multiple lines were selected
       if(selectedText.text.search("\n")==-1){
