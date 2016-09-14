@@ -47,17 +47,17 @@ Vue.component('wysiwyg-toolbar', {
       }
 
       var text = this.sharedState.message;
+      //check if link exist
       if(link!=false){
-        text = [text.slice(0, selectedText.end), rightMark + "(" + link + ') ', text.slice(selectedText.end)].join('');
-        text = [text.slice(0, selectedText.start), leftMark, text.slice(selectedText.start)].join('');
+        rightMark += rightMark + "(" + link + ") "
       }
       //check if multiple lines were selected
-      else if(selectedText.text.search("\n")==-1){
+      if(selectedText.text.search("\n")==-1){
         text = [text.slice(0, selectedText.end), rightMark, text.slice(selectedText.end)].join('');
         text = [text.slice(0, selectedText.start), leftMark, text.slice(selectedText.start)].join('');
       }else{
-        text = [text.slice(0, selectedText.end), rightMark, text.slice(selectedText.end)].join('');
-        text = [text.slice(0, selectedText.start), leftMark, text.slice(selectedText.start)].join('');
+        // text = [text.slice(0, selectedText.end), rightMark, text.slice(selectedText.end)].join('');
+        // text = [text.slice(0, selectedText.start), leftMark, text.slice(selectedText.start)].join('');
         console.log(selectedText.text.search("\n"));
       }
       return text;
@@ -79,11 +79,13 @@ Vue.component('wysiwyg-toolbar', {
       this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), '1. ', false, false);
     },
     heading: function(num, event){
+      // create #### string based on num value
       var headings = "";
       for(var i=0; i<num; i++){
         headings += "#";
       }
-      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), headings+" ", false, false);
+      headings += " ";
+      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), headings, false, false);
     },
     addLink: function (event) {
       var link = prompt('Enter the URL for this link:', 'http://');
@@ -91,7 +93,7 @@ Vue.component('wysiwyg-toolbar', {
     },
     clearFormat: function (event) {
       console.log('clear');
-      document.execCommand('removeFormat', false, null);
+
     }
   },
   template: `<div>
