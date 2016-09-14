@@ -1,5 +1,5 @@
 var textarea = {
-  message: 'Hello!'
+  message: 'Start typing ...'
 };
 
 Vue.component('wysiwyg-toolbar', {
@@ -11,7 +11,6 @@ Vue.component('wysiwyg-toolbar', {
   },
 
   methods: {
-
     getSelectionPoints: function(){
           var startPos;
           var endPos;
@@ -32,46 +31,63 @@ Vue.component('wysiwyg-toolbar', {
             selectedText = textComponent.value.substring(startPos, endPos)
           }
           return {
-            startPos: startPos,
-            endPos: endPos
+            start: startPos,
+            end: endPos,
+            text: selectedText
           }
 
     },
 
-    addMarkdown: function(start, end, leftMark, rightMark){
+    addMarkdown: function(selectedText, leftMark, rightMark, link){
       if(leftMark == false){
         leftMark = "";
       }
       if(rightMark == false){
         rightMark = "";
       }
+
       var text = this.sharedState.message;
-      text = [text.slice(0, end), rightMark, text.slice(end)].join('');
-      text = [text.slice(0, start), leftMark, text.slice(start)].join('');
-      console.log(text);
+      if(link!=false){
+        text = [text.slice(0, selectedText.end), rightMark + "(" + link + ') ', text.slice(selectedText.end)].join('');
+        text = [text.slice(0, selectedText.start), leftMark, text.slice(selectedText.start)].join('');
+      }
+      //check if multiple lines were selected
+      else if(selectedText.text.search("\n")==-1){
+        text = [text.slice(0, selectedText.end), rightMark, text.slice(selectedText.end)].join('');
+        text = [text.slice(0, selectedText.start), leftMark, text.slice(selectedText.start)].join('');
+      }else{
+        text = [text.slice(0, selectedText.end), rightMark, text.slice(selectedText.end)].join('');
+        text = [text.slice(0, selectedText.start), leftMark, text.slice(selectedText.start)].join('');
+        console.log(selectedText.text.search("\n"));
+      }
       return text;
+
     },
     bold: function (event){
-      this.sharedState.message = this.addMarkdown(this.getSelectionPoints().startPos, this.getSelectionPoints().endPos, '**', '**');
+      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), '**', '**', false);
     },
     italic: function(event){
-      this.sharedState.message = this.addMarkdown(this.getSelectionPoints().startPos, this.getSelectionPoints().endPos, '_', '_');
+      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), '_', '_', false);
     },
     underline: function(event){
 
     },
     unorderedList: function(event){
-      document.execCommand('InsertUnorderedList', false, 'newUL');
+      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), '* ', false, false);
     },
     orderedList: function(event){
-      document.execCommand('InsertOrderedList', false, 'newOL');
+      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), '1. ', false, false);
     },
-    heading: function(event){
-      document.execCommand('formatBlock', false, '**' + '**');
+    heading: function(num, event){
+      var headings = "";
+      for(var i=0; i<num; i++){
+        headings += "#";
+      }
+      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), headings+" ", false, false);
     },
     addLink: function (event) {
-      var linkURL = prompt('Enter the URL for this link:', 'http://');
-      document.execCommand('CreateLink', false, linkURL);
+      var link = prompt('Enter the URL for this link:', 'http://');
+      this.sharedState.message = this.addMarkdown(this.getSelectionPoints(), "[", "]", link);;
     },
     clearFormat: function (event) {
       console.log('clear');
@@ -105,8 +121,8 @@ Vue.component('wysiwyg-toolbar', {
 
         <ul class='mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect'
             for='headings'>
-          <li class='mdl-menu__item' @click='heading'>Heading 1</li>
-          <li class='mdl-menu__item' @click='heading'>Heading 2</li>
+          <li class='mdl-menu__item' @click='heading(1)'>Heading 1</li>
+          <li class='mdl-menu__item' @click='heading(2)'>Heading 2</li>
           <li class='mdl-menu__item' @click='heading(3)'>Heading 3</li>
           <li class='mdl-menu__item' @click='heading(4)'>Heading 4</li>
           <li class='mdl-menu__item' @click='heading(5)'>Heading 5</li>
@@ -120,9 +136,6 @@ Vue.component('wysiwyg-toolbar', {
       </div>`
 });
 
-// Vue.component('wysiwyg-textarea', {
-//   template: '<textarea></textarea>'
-// });
 
 Vue.component('wysiwyg-preview', {
   data: function(){
@@ -142,10 +155,3 @@ var vm = new Vue({
   el: '#app'
 
 });
-
-
-
-// vm.$watch('textarea', function (newVal, oldVal) {
-//   // this callback will be called when `vm.a` changes
-//   console.log("changed");
-// })
