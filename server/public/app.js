@@ -4,12 +4,6 @@ var textarea = {
 var und = new upndown();
 
 Vue.component('wysiwyg-toolbar', {
-  data: function(){
-    return {
-      privateState: {},
-      sharedState: textarea
-    }
-  },
   ready: function(){
     var elem = document.getElementById('text');
     elem.addEventListener('DOMSubtreeModified', this.updatePreview, false);
@@ -28,8 +22,6 @@ Vue.component('wysiwyg-toolbar', {
         }
 
       });
-      
-
     },
     bold: function (event){
       document.execCommand('bold');
@@ -54,7 +46,6 @@ Vue.component('wysiwyg-toolbar', {
       document.execCommand('CreateLink', false, linkURL);
     },
     clearFormat: function (event) {
-      console.log('clear');
       document.execCommand('removeFormat', false, null);
     }
   },
@@ -67,9 +58,9 @@ Vue.component('wysiwyg-toolbar', {
         <button class="mdl-button mdl-js-button mdl-button--icon" @click="italic">
           <i class="material-icons">format_italic</i>
         </button>
-        <button class="mdl-button mdl-js-button mdl-button--icon" @click="underline">
+        <!-- <button class="mdl-button mdl-js-button mdl-button--icon" @click="underline">
           <i class="material-icons">format_underlined</i>
-        </button>
+        </button> -->
 
         <button class="mdl-button mdl-js-button mdl-button--icon" @click="unorderedList">
           <i class="material-icons">format_list_bulleted</i>
@@ -99,9 +90,8 @@ Vue.component('wysiwyg-toolbar', {
           <i class="material-icons">format_clear</i>
         </button>
       </div>
-      <div >
-        <div id="text" style="min-height: 200px; padding: 1em" contenteditable></div>
-      </div>`
+
+        <div id="text" style="min-height: 200px; padding: 1em" contenteditable></div>`
 });
 
 
@@ -109,12 +99,8 @@ Vue.component('wysiwyg-toolbar', {
 Vue.component('wysiwyg-preview', {
   data: function(){
     return{
-      privateState: {},
       sharedState: textarea
     }
-  },
-  filters: {
-    marked: marked
   },
   template: '<div style="min-height: 200px; background: #dadada" v-html="sharedState.message"></div>'
 });
@@ -124,7 +110,7 @@ var vm = new Vue({
   el: '#app',
   data: function(){
     return {
-      privateState: {},
+
       sharedState: textarea
     }
   },
