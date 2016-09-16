@@ -1,6 +1,7 @@
 var textarea = {
   message: 'Start typing ...'
 };
+var und = new upndown();
 
 Vue.component('wysiwyg-toolbar', {
   data: function(){
@@ -27,7 +28,19 @@ Vue.component('wysiwyg-toolbar', {
         //     }
         // }
         // this.sharedState.message = textFromEditor;
-        this.sharedState.message = el.innerHTML;
+        var parsedText;
+        und.convert(el.innerHTML, function(err, markdown) {
+          if(err) {
+            console.log(err);
+          }
+          else {
+
+            parsedText = markdown;
+            console.log(parsedText);
+          } // Outputs: markdown !
+        });
+        // this.sharedState.message = el.innerHTML;
+
     },
     bold: function (event){
       document.execCommand('bold');
@@ -114,7 +127,7 @@ Vue.component('wysiwyg-preview', {
   filters: {
     marked: marked
   },
-  template: '<div style="min-height: 200px; background: #dadada" v-html="sharedState.message | marked"></div>'
+  template: '<div style="min-height: 200px; background: #dadada" v-html="sharedState.message"></div>'
 });
 
 
