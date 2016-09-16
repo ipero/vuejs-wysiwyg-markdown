@@ -18,28 +18,17 @@ Vue.component('wysiwyg-toolbar', {
     updatePreview: function(){
       var textFromEditor="";
       var el = document.getElementById('text');
-        // for(var x=0; x<el.childNodes.length; x++){
-        //     if(el.childNodes[x].data){
-        //         textFromEditor+=el.childNodes[x].data;
-        //         console.log(el.childNodes);
-        //     }else{
-        //         console.log("new line")
-        //         textFromEditor+="\n";
-        //     }
-        // }
-        // this.sharedState.message = textFromEditor;
-        var parsedText;
-        und.convert(el.innerHTML, function(err, markdown) {
-          if(err) {
-            console.log(err);
-          }
-          else {
 
-            parsedText = markdown;
-            console.log(parsedText);
-          } // Outputs: markdown !
-        });
-        // this.sharedState.message = el.innerHTML;
+      und.convert(el.innerHTML, function(err, markdown) {
+        if(err) {
+          console.log(err);
+        }
+        else {
+          vm.grabText(markdown);
+        }
+
+      });
+      
 
     },
     bold: function (event){
@@ -132,6 +121,17 @@ Vue.component('wysiwyg-preview', {
 
 
 var vm = new Vue({
-  el: '#app'
+  el: '#app',
+  data: function(){
+    return {
+      privateState: {},
+      sharedState: textarea
+    }
+  },
+  methods:{
+    grabText: function (text) {
+      this.sharedState.message = text;
+    }
+  }
 
 });
